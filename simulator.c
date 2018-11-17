@@ -42,109 +42,6 @@ void bitStringTest(void) {
     printf("\n");
 }
 
-void testAddRegisterModeNegative() {
-    printf("\n\n\t\t####  Starting ADD - Register Mode test  ####\n");
-
-    /* Initialize computer */
-    Computer comp;
-    COMP_Init(&comp);
-
-    /* Create desired instructions */
-    BitString addInstr;                         // R1 <-- R2 + R3
-    BSTR_SetBits(&addInstr, "0001001010000011"); // ADD Dest: R1, Src1: R2 Src2: R3
-
-    /* Load desired instructions */
-    COMP_LoadWord(&comp, 0, addInstr);
-
-    /* Setup R2 and R3 as negative values */
-    BitString sr1, sr2;
-    BSTR_SetValueTwosComp(&(comp.reg[2]), -2, 16);
-    BSTR_SetValueTwosComp(&(comp.reg[3]), -3, 16);
-
-    /* Display initialized computer and loaded instructions */
-    printf("\t####  Displaying computers initial state  ####\n");
-    COMP_Display(comp);
-
-    /* Execute all loaded instructions */
-    COMP_Execute(&comp);
-
-    /* Display state of computer after execution */
-    printf("\n\n\t####  Displaying computers state after execution ####\n");
-    COMP_Display(comp);
-
-    printf("\n\t\t####  Finished ADD - Register Mode test  ####\n");
-    printf("Verify R1 <-- R2 + R3)\n");
-    printf("Verify R1 <-- -2 + -3)\n");
-    printf("R1 Value = %d\n", BSTR_GetValueTwosComp(comp.reg[1]));
-    printf("Verify CC n,z,p = 100");
-}
-
-
-void testAddRegisterModePositive() {
-    printf("\n\n\t\t####  Starting ADD - Register Mode test  ####\n");
-
-    /* Initialize computer */
-    Computer comp;
-    COMP_Init(&comp);
-
-    /* Create desired instructions */
-    BitString addInstr;                         // R1 <-- R2 + R3
-    BSTR_SetBits(&addInstr, "0001001010000011"); // ADD Dest: R1, Src1: R2 Src2: R3
-
-    /* Load desired instructions */
-    COMP_LoadWord(&comp, 0, addInstr);
-
-    /* Display initialized computer and loaded instructions */
-    printf("\t####  Displaying computers initial state  ####\n");
-    COMP_Display(comp);
-
-    /* Execute all loaded instructions */
-    COMP_Execute(&comp);
-
-    /* Display state of computer after execution */
-    printf("\n\n\t####  Displaying computers state after execution ####\n");
-    COMP_Display(comp);
-
-    printf("\n\t\t####  Finished ADD - Register Mode test  ####\n");
-    printf("Verify R1 <-- R2 + R3)\n");
-    printf("R1 Value = %d\n", BSTR_GetValueTwosComp(comp.reg[1]));
-    printf("Verify CC n,z,p = 001");
-}
-
-void testAddRegisterModeNegativePositive() {
-    printf("\n\n\t\t####  Starting ADD - Register Mode test  ####\n");
-
-    /* Initialize computer */
-    Computer comp;
-    COMP_Init(&comp);
-
-    /* Create desired instructions */
-    BitString addInstr;                         // R1 <-- R2 + R3
-    BSTR_SetBits(&addInstr, "0001001010000011"); // ADD Dest: R1, Src1: R2 Src2: R3
-
-    /* Load desired instructions */
-    COMP_LoadWord(&comp, 0, addInstr);
-
-    /* Setup R3 as a negative value */
-    BSTR_SetValueTwosComp(&(comp.reg[3]), -3, 16); // R3 <-- -3
-
-    /* Display initialized computer and loaded instructions */
-    printf("\t####  Displaying computers initial state  ####\n");
-    COMP_Display(comp);
-
-    /* Execute all loaded instructions */
-    COMP_Execute(&comp);
-
-    /* Display state of computer after execution */
-    printf("\n\n\t####  Displaying computers state after execution ####\n");
-    COMP_Display(comp);
-
-    printf("\n\t\t####  Finished ADD - Register Mode test  ####\n");
-    printf("Verify R1 <-- R2 + R3)\n");
-    printf("Verify R1 <-- 2 + -3)\n");
-    printf("R1 Value = %d\n", BSTR_GetValueTwosComp(comp.reg[1]));
-    printf("Verify CC n,z,p = 100");
-}
 
 void testNot() {/* NOT test */
     printf("\n\n\t\t####  Starting NOT test  ####\n");
@@ -177,20 +74,67 @@ void testNot() {/* NOT test */
     printf("Verify CC n,z,p = 100");
 }
 
+
+void testAddRegisterMode(int a, int b) {
+    printf("\n\n\t\t####  Starting ADD - Register Mode test  ####\n");
+
+    /* Initialize computer */
+    Computer comp;
+    COMP_Init(&comp);
+
+    /* Create desired instructions */
+    BitString addInstr;                         // R2 <-- R0 + R1
+    BSTR_SetBits(&addInstr, "0001010000000001"); // ADD Dest: R2, Src1: R0 Src2: R1
+
+    /* Load desired instructions */
+    COMP_LoadWord(&comp, 0, addInstr);
+
+    /* Setup R0 and R1 with the given value of a */
+    BSTR_SetValueTwosComp(&(comp.reg[0]), a, 16); // R0 <-- a
+    BSTR_SetValueTwosComp(&(comp.reg[1]), b, 16); // R1 <-- b
+
+    /* Display initialized computer and loaded instructions */
+    printf("\t####  Displaying computers initial state  ####\n");
+    COMP_Display(comp);
+
+    /* Execute all loaded instructions */
+    COMP_Execute(&comp);
+
+    /* Display state of computer after execution */
+    printf("\n\n\t####  Displaying computers state after execution ####\n");
+    COMP_Display(comp);
+
+    printf("\n\t\t####  Finished ADD - Register Mode test  ####\n\n");
+    printf("Verify R2 <-- R0 + R1)\n");
+    printf("Verify R2 <-- %d + %d)\n", a, b);
+    printf("R2 Value = %d\n", BSTR_GetValueTwosComp(comp.reg[2]));
+    printf("Verify CC n,z,p for the given stored result\n");
+}
+
+
+
 int main(int argc, const char * argv[]) {
 
     /* Tests the NOT instruction */
     //    testNot();
 
     /* Test the ADD instruction in Register mode with two positive numbers */
-    // testAddRegisterModePositive();
+    testAddRegisterMode(5, 5);
 
     /* Test the ADD instruction in Register mode with two negative numbers */
-    // testAddRegisterModeNegative();
+    testAddRegisterMode(-5, -5);
 
     /* Test the ADD instruction in Register mode with a negative and positive number
      * result is negative  */
-    testAddRegisterModeNegativePositive();
+    testAddRegisterMode(-5, 2);
+
+    /* Test the ADD instruction in Register mode with a negative and positive number
+     * result is positive  */
+    testAddRegisterMode(-5, 10);
+
+    /* Test the ADD instruction in Register mode with a negative and positive number
+     * result is zero  */
+    testAddRegisterMode(-5, 5);
 
     /************************************** */
 /** The next two variables - program and programSize - */
