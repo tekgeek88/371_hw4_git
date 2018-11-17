@@ -74,7 +74,16 @@ void testNot() {/* NOT test */
     printf("Verify CC n,z,p = 100");
 }
 
-
+/**
+ * Tests register mode of the ADD instruction using the following
+ * formula for the given values a and b stored respectively in R0 and R1.
+ *
+ * c = a + b
+ * R2 <- R0 + R1
+ *
+ * @param a 16 bit signed integer value to be added
+ * @param b 16 bit signed integer value to be added
+ */
 void testAddRegisterMode(int a, int b) {
     printf("\n\n\t\t####  Starting ADD - Register Mode test  ####\n");
 
@@ -111,6 +120,58 @@ void testAddRegisterMode(int a, int b) {
     printf("Verify CC n,z,p for the given stored result\n");
 }
 
+/**
+ * Tests immediate mode of the ADD instruction using the following
+ * formula for the given values a and b stored respectively in R0 and b
+ * where b is a literal value to be added to a and stored in R1
+ *
+ * c = a + b
+ * R1 <- R0 + b
+ *
+ * @param a 16 bit signed integer value to be added
+ * @param b 5 bit signed integer value to be added
+ */
+void testAddImmediateMode(int a, int b) {
+    printf("\n\n\t\t####  Starting ADD - Immediate Mode test  ####\n");
+
+    /* Initialize computer */
+    Computer comp;
+    COMP_Init(&comp);
+
+
+
+    /* Create desired instructions */
+    BitString addInstrComplete; // R1 <-- R0 + b
+    BitString addInstr;         // R1 <-- R0 + imm5
+    BitString imm5BS;           // 5 bit 2's comp binary number
+    BSTR_SetValueTwosComp(&imm5BS, b, 5);
+    BSTR_SetBits(&addInstr, "00010010001"); // ADD Dest: R1, Src1: R0 Imm5: b
+    BSTR_Append(&addInstrComplete, addInstr, imm5BS);
+
+    /* Load desired instructions */
+    COMP_LoadWord(&comp, 0, addInstrComplete);
+
+    /* Setup R0 with the given value of a */
+    BSTR_SetValueTwosComp(&(comp.reg[0]), a, 16); // R0 <-- a
+
+    /* Display initialized computer and loaded instructions */
+    printf("\t####  Displaying computers initial state  ####\n");
+    COMP_Display(comp);
+
+    /* Execute all loaded instructions */
+    COMP_Execute(&comp);
+
+    /* Display state of computer after execution */
+    printf("\n\n\t####  Displaying computers state after execution ####\n");
+    COMP_Display(comp);
+
+    printf("\n\t\t####  Finished ADD - Immediate Mode test  ####\n\n");
+    printf("Verify R1 <-- R0 + b)\n");
+    printf("Verify R1 <-- %d + %d)\n", a, b);
+    printf("R1 Value = %d\n", BSTR_GetValueTwosComp(comp.reg[1]));
+    printf("Verify CC n,z,p for the given stored result\n");
+}
+
 
 
 int main(int argc, const char * argv[]) {
@@ -119,22 +180,42 @@ int main(int argc, const char * argv[]) {
     //    testNot();
 
     /* Test the ADD instruction in Register mode with two positive numbers */
-    testAddRegisterMode(5, 5);
+//    testAddRegisterMode(5, 5);
 
     /* Test the ADD instruction in Register mode with two negative numbers */
-    testAddRegisterMode(-5, -5);
+//    testAddRegisterMode(-5, -5);
 
     /* Test the ADD instruction in Register mode with a negative and positive number
      * result is negative  */
-    testAddRegisterMode(-5, 2);
+//    testAddRegisterMode(-5, 2);
 
     /* Test the ADD instruction in Register mode with a negative and positive number
      * result is positive  */
-    testAddRegisterMode(-5, 10);
+//    testAddRegisterMode(-5, 10);
 
     /* Test the ADD instruction in Register mode with a negative and positive number
      * result is zero  */
-    testAddRegisterMode(-5, 5);
+//    testAddRegisterMode(-5, 5);
+
+
+    /* Test the ADD instruction in Immediate mode with two positive numbers */
+    testAddImmediateMode(5, 5);
+
+    /* Test the ADD instruction in Immediate mode with two negative numbers */
+    testAddImmediateMode(-5, -5);
+
+    /* Test the ADD instruction in Immediate mode with a negative and positive number
+     * result is negative  */
+    testAddImmediateMode(-5, 2);
+
+    /* Test the ADD instruction in Immediate mode with a negative and positive number
+     * result is positive  */
+    testAddImmediateMode(-5, 10);
+
+    /* Test the ADD instruction in Immediate mode with a negative and positive number
+     * result is zero  */
+    testAddImmediateMode(-5, 5);
+
 
     /************************************** */
 /** The next two variables - program and programSize - */
