@@ -192,11 +192,7 @@ void testLdMode(int dest_register, int offset, int initialPC) {
     /* Load some interesting things into the all of the memory registers */
     int i;
     for (i = 0; i < 50; i++) {
-        if (i % 2) {
             BSTR_SetValueTwosComp(&(comp.mem[i]), i, 16);
-        } else {
-            BSTR_SetValueTwosComp(&(comp.mem[i]), i * -1, 16);
-        }
     }
 
     /* Create desired instruction set */
@@ -230,7 +226,7 @@ void testLdMode(int dest_register, int offset, int initialPC) {
     printf("\n\t\t####  Finished LD test  ####\n\n");
     printf("Verify R_a <-- PC + offset)\n");
     printf("Verify R_%d <-- ", dest_register); //%d + %d)\n", offset);
-    printf("1 + %d\n", offset);
+    printf("%d + %d\n", initialPC, offset);
 }
 
 
@@ -295,6 +291,14 @@ int main(int argc, const char * argv[]) {
     destRegister = 0;   // Load into
     pcOffset = 10;       // This number of steps ahead
     initialPC = 0;      // Starting at PC + 1
+    testLdMode(destRegister, pcOffset, initialPC);
+
+
+    /* Test LD into register 0 with negative offset and PC at 10 */
+    // R1 <-- M[PC + 1 + PCOffset]
+    destRegister = 0;   // Load into
+    pcOffset = -5;       // This number of steps ahead
+    initialPC = 10;      // Starting at PC + 1
     testLdMode(destRegister, pcOffset, initialPC);
 
 
