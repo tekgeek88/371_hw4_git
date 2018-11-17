@@ -68,13 +68,6 @@ void COMP_ExecuteAdd(Computer *comp) {
         BSTR_SetValueTwosComp(&comp->reg[BSTR_GetValue(drBS)], sr1Value + sr2Value, 16);
     }
 
-    //get the 'operator value'
-//    status = BSTR_GetValue(comp->reg[BSTR_GetValue(drBS)]);
-
-//    if (status > 0) BSTR_SetValue(&(comp->cc), 1, 3);
-//    if (status < 0) BSTR_SetValue(&(comp->cc), 4, 3);
-//    if (!status) BSTR_SetValue(&(comp->cc), 2, 3);
-
     /* Update the CC flag */
     COMP_ExecuteSetCC(comp, comp->reg[ BSTR_GetValue(drBS)]);
 }
@@ -106,7 +99,7 @@ void COMP_ExecuteTrap(Computer *comp, int* isRunning) {
     BSTR_Substring(&trap, comp->ir, 8, 8);
     id = BSTR_GetValue(trap);
 
-    if (id == 33) printf("%c\n", BSTR_GetValue(comp->reg[0])); // OUTPUT
+    if (id == 33) printf("%c", BSTR_GetValue(comp->reg[0])); // OUTPUT
     if (id == 37) *isRunning = 0; // HALT
 }
 
