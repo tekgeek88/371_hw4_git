@@ -120,7 +120,7 @@ void testAddRegisterMode(int a, int b) {
     printf("Verify CC n,z,p for the given stored result\n");
 }
 
-/**
+/***
  * Tests immediate mode of the ADD instruction using the following
  * formula for the given values a and b stored respectively in R0 and b
  * where b is a literal value to be added to a and stored in R1
@@ -137,8 +137,6 @@ void testAddImmediateMode(int a, int b) {
     /* Initialize computer */
     Computer comp;
     COMP_Init(&comp);
-
-
 
     /* Create desired instructions */
     BitString addInstrComplete; // R1 <-- R0 + b
@@ -173,6 +171,66 @@ void testAddImmediateMode(int a, int b) {
 }
 
 
+/***
+ * Tests the load instruction
+ * given a destination register and a 9bit signed PCoffset
+ *
+ * @param a 3 bit int in the range of 1-7 representing the Destination
+ * @param b 9 bit int representing the memory address to fetch the data to be loaded.
+ */
+void testLdMode(int a, int b) {
+    printf("\n\n\t\t####  Starting LD test  ####\n");
+
+    /* Initialize computer */
+    Computer comp;
+    COMP_Init(&comp);
+
+    /* Create desired instruction set */
+    BitString ldInstr;
+    BSTR_SetBits(&ldInstr, "0001");         // LD Dest: R0
+    /* Create a bitstring for the desired storage address */
+    BitString address;
+    BSTR_SetValue(&address, a, 3);
+    /* Create the offset from b */
+    BitString pcOffset;                     // 9 bit 2's comp binary number
+    BSTR_SetValueTwosComp(&pcOffset, b, 9);
+    /* Create the full instruction needed for LD operation */
+    BitString ldInstrComplete;              // a <-- M[PC + PCoffset9]
+    BSTR_Append(&ldInstrComplete, ldInstr, address);
+    BSTR_Append(&ldInstrComplete, ldInstrComplete, pcOffset);
+
+    BSTR_Display(ldInstrComplete, 0);
+
+    /* Load desired instruction */
+    COMP_LoadWord(&comp, 0, ldInstrComplete);
+
+    /* Load some interesting things in the following 10 registers */
+    int i;
+    for (i = 1; i <= 10; i++) {
+        if (i % 2 == 0) {
+            BSTR_SetValueTwosComp(&(comp.mem[i]), i, 16);
+        } else {
+            BSTR_SetValueTwosComp(&(comp.mem[i]), i * -1, 16);
+        }
+    }
+
+    /* Display initialized computer and loaded instructions */
+    printf("\t####  Displaying computers initial state  ####\n");
+    COMP_Display(comp);
+
+    /* Execute all loaded instructions */
+    COMP_Execute(&comp);
+
+    /* Display state of computer after execution */
+    printf("\n\n\t####  Displaying computers state after execution ####\n");
+    COMP_Display(comp);
+
+    printf("\n\t\t####  Finished LD test  ####\n\n");
+    printf("Verify Ra <-- PC + b)\n");
+    printf("Verify R%d <-- ", a); //%d + %d)\n", b);
+    printf("1 + %d\n", b);
+}
+
 
 int main(int argc, const char * argv[]) {
 
@@ -199,22 +257,25 @@ int main(int argc, const char * argv[]) {
 
 
     /* Test the ADD instruction in Immediate mode with two positive numbers */
-    testAddImmediateMode(5, 5);
+//    testAddImmediateMode(5, 5);
 
     /* Test the ADD instruction in Immediate mode with two negative numbers */
-    testAddImmediateMode(-5, -5);
+//    testAddImmediateMode(-5, -5);
 
     /* Test the ADD instruction in Immediate mode with a negative and positive number
      * result is negative  */
-    testAddImmediateMode(-5, 2);
+//    testAddImmediateMode(-5, 2);
 
     /* Test the ADD instruction in Immediate mode with a negative and positive number
      * result is positive  */
-    testAddImmediateMode(-5, 10);
+//    testAddImmediateMode(-5, 10);
 
     /* Test the ADD instruction in Immediate mode with a negative and positive number
      * result is zero  */
-    testAddImmediateMode(-5, 5);
+//    testAddImmediateMode(-5, 5);
+
+
+    testLdMode(1, 6);
 
 
     /************************************** */
